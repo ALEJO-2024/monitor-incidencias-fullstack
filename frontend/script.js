@@ -1,4 +1,40 @@
+const ES_LOCAL =
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1';
+
 const API_URL = 'http://localhost:3000/api/incidencias';
+const STORAGE_KEY = 'monitor_incidencias_demo_v1';
+
+const DATOS_INICIALES = [
+  {
+    id: 1,
+    municipio: 'Medellín',
+    tipoFalla: 'Sobrecarga en transformador',
+    precipitacionMm: 34.5,
+    usuariosAfectados: 1240,
+    estado: 'Resuelto',
+    fecha: '2026-11-20'
+  },
+  {
+    id: 2,
+    municipio: 'Caucasia',
+    tipoFalla: 'Caída de línea por tormenta',
+    precipitacionMm: 68.2,
+    usuariosAfectados: 3100,
+    estado: 'En proceso',
+    fecha: '2026-11-21'
+  },
+  {
+    id: 3,
+    municipio: 'Apartadó',
+    tipoFalla: 'Descarga atmosférica',
+    precipitacionMm: 52.0,
+    usuariosAfectados: 890,
+    estado: 'Pendiente',
+    fecha: '2026-11-22'
+  }
+];
+
 let grafica = null;
 
 const filtroMunicipio = document.getElementById('filtroMunicipio');
@@ -6,12 +42,35 @@ const filtroEstado = document.getElementById('filtroEstado');
 const formIncidencia = document.getElementById('formIncidencia');
 const tablaIncidencias = document.getElementById('tablaIncidencias');
 
+function obtenerDatosLocalStorage() {
+  const guardado = localStorage.getItem(STORAGE_KEY);
+  if (!guardado) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATOS_INICIALES));
+    return [...DATOS_INICIALES];
+  }
+  return JSON.parse(guardado);
+}
+
+function guardarDatosLocalStorage(datos) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+}
+
 async function cargarIncidencias() {
   const municipio = filtroMunicipio.value;
   const estadoSeleccionado = filtroEstado.value;
+  let datos = [];
 
-  const respuesta = await fetch(`${API_URL}?municipio=${encodeURIComponent(municipio)}`);
-  let datos = await respuesta.json();
+  if (ES_LOCAL) {
+    const respuesta = await fetch(`${API_URL}?municipio=${encodeURIComponent(municipio)}`);
+    datos = await respuesta.json();
+  } else {
+    datos = obtenerDatosLocalStorage();
+    if (municipio !== 'Todos') {
+      datos = datos.filter(
+        (item) => item.municipio.toLowerCase() === municipio.toLowerCase()
+      );
+    }
+  }
 
   if (estadoSeleccionado !== 'Todos') {
     datos = datos.filter((item) => item.estado === estadoSeleccionado);
@@ -150,16 +209,26 @@ formIncidencia.addEventListener('submit', async (e) => {
   const nueva = {
     municipio: document.getElementById('municipio').value,
     tipoFalla: document.getElementById('tipoFalla').value,
-    precipitacionMm: document.getElementById('precipitacionMm').value,
-    usuariosAfectados: document.getElementById('usuariosAfectados').value,
+    precipitacionMm: Number(document.getElementById('precipitacionMm').value) || 0,
+    usuariosAfectados: Number(document.getElementById('usuariosAfectados').value) || 0,
     estado: document.getElementById('estado').value
   };
 
-  await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(nueva)
-  });
+  if (ES_LOCAL) {
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(nueva)
+    });
+  } else {
+    const datos = obtenerDatosLocalStorage();
+    datos.unshift({
+      id: Date.now(),
+      ...nueva,
+      fecha: new Date().toISOString().split('T')[0]
+    });
+    guardarDatosLocalStorage(datos);
+  }
 
   formIncidencia.reset();
   cargarIncidencias();
@@ -169,17 +238,32 @@ async function cambiarEstado(id, estadoActual) {
   const orden = ['Pendiente', 'En proceso', 'Resuelto'];
   const siguiente = orden[(orden.indexOf(estadoActual) + 1) % orden.length];
 
-  await fetch(`${API_URL}/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ estado: siguiente })
-  });
+  if (ES_LOCAL) {
+    await fetch(`${API_URL}/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado: siguiente })
+    });
+  } else {
+    const datos = obtenerDatosLocalStorage();
+    const indice = datos.findIndex((item) => item.id === id);
+    if (indice !== -1) {
+      datos[indice].estado = siguiente;
+      guardarDatosLocalStorage(datos);
+    }
+  }
 
   cargarIncidencias();
 }
 
 async function eliminarIncidencia(id) {
-  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  if (ES_LOCAL) {
+    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  } else {
+    const datos = obtenerDatosLocalStorage().filter((item) => item.id !== id);
+    guardarDatosLocalStorage(datos);
+  }
+
   cargarIncidencias();
 }
 
