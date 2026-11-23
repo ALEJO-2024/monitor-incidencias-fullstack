@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitor de Incidencias y Clima Municipal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>⚡ Monitor de Incidencias y Clima Municipal</h1>
+      <p>Gestión operativa y correlación pluviométrica en tiempo real</p>
+    </div>
+    <div class="filtro-box">
+      <label for="filtroMunicipio">Municipio:</label>
+      <select id="filtroMunicipio">
+        <option value="Todos">Todos</option>
+        <option value="Medellín">Medellín</option>
+        <option value="Bello">Bello</option>
+        <option value="Caucasia">Caucasia</option>
+        <option value="Apartadó">Apartadó</option>
+        <option value="Cisneros">Cisneros</option>
+      </select>
+
+      <label for="filtroEstado">Estado:</label>
+      <select id="filtroEstado">
+        <option value="Todos">Todos</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="En proceso">En proceso</option>
+        <option value="Resuelto">Resuelto</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Tarjetas de KPIs -->
+    <section class="kpis">
+      <article class="kpi-card">
+        <span>Total Incidencias</span>
+        <strong id="kpiTotal">0</strong>
+      </article>
+      <article class="kpi-card">
+        <span>Usuarios Afectados</span>
+        <strong id="kpiUsuarios">0</strong>
+      </article>
+      <article class="kpi-card">
+        <span>Precipitación Promedio</span>
+        <strong id="kpiLluvia">0 mm</strong>
+      </article>
+      <article class="kpi-card">
+        <span>Efectividad de Cierre</span>
+        <strong id="kpiEfectividad">0%</strong>
+      </article>
+    </section>
+
+    <!-- Formulario y Gráfica -->
+    <section class="grid-2">
+      <div class="card">
+        <h2>Registrar Nueva Incidencia</h2>
+        <form id="formIncidencia">
+          <div class="form-group">
+            <label for="municipio">Municipio</label>
+            <select id="municipio" required>
+              <option value="Medellín">Medellín</option>
+              <option value="Bello">Bello</option>
+              <option value="Caucasia">Caucasia</option>
+              <option value="Apartadó">Apartadó</option>
+              <option value="Cisneros">Cisneros</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoFalla">Tipo de Falla</label>
+            <input type="text" id="tipoFalla" placeholder="Ej: Caída de línea por lluvia" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="precipitacionMm">Precipitación (mm)</label>
+              <input type="number" id="precipitacionMm" step="0.1" min="0" value="15.0" required />
+            </div>
+            <div class="form-group">
+              <label for="usuariosAfectados">Usuarios Afectados</label>
+              <input type="number" id="usuariosAfectados" min="1" value="250" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado Inicial</label>
+            <select id="estado">
+              <option value="Pendiente">Pendiente</option>
+              <option value="En proceso">En proceso</option>
+              <option value="Resuelto">Resuelto</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-primary">Guardar Reporte</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Usuarios por Estado y Lluvia Promedio por Municipio</h2>
+        <canvas id="graficaIncidencias"></canvas>
+      </div>
+    </section>
+
+    <!-- Tabla de registros -->
+    <section class="card">
+      <h2>Bitácora de Incidencias</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Municipio</th>
+              <th>Tipo de Falla</th>
+              <th>Lluvia (mm)</th>
+              <th>Usuarios</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaIncidencias"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

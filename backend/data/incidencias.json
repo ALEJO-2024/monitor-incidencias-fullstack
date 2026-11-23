@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1795458283081,
+    "municipio": "Apartadó",
+    "tipoFalla": "lluvias",
+    "precipitacionMm": 15,
+    "usuariosAfectados": 100,
+    "estado": "Resuelto",
+    "fecha": "2026-11-23"
+  },
+  {
+    "id": 1795458204615,
+    "municipio": "Medellín",
+    "tipoFalla": "caida de linea por lluvia",
+    "precipitacionMm": 15,
+    "usuariosAfectados": 100,
+    "estado": "Resuelto",
+    "fecha": "2026-11-23"
+  },
+  {
+    "id": 1795458051638,
+    "municipio": "Bello",
+    "tipoFalla": "caida de linea por lluvia",
+    "precipitacionMm": 15,
+    "usuariosAfectados": 250,
+    "estado": "Pendiente",
+    "fecha": "2026-11-23"
+  },
+  {
+    "id": 1795457696837,
+    "municipio": "Cisneros",
+    "tipoFalla": "caida de lluvia",
+    "precipitacionMm": 15,
+    "usuariosAfectados": 250,
+    "estado": "Resuelto",
+    "fecha": "2026-11-23"
+  },
+  {
+    "id": 1,
+    "municipio": "Medellín",
+    "tipoFalla": "Sobrecarga en transformador",
+    "precipitacionMm": 34.5,
+    "usuariosAfectados": 1240,
+    "estado": "Pendiente",
+    "fecha": "2026-11-20"
+  },
+  {
+    "id": 2,
+    "municipio": "Caucasia",
+    "tipoFalla": "Caída de línea por tormenta",
+    "precipitacionMm": 68.2,
+    "usuariosAfectados": 3100,
+    "estado": "Resuelto",
+    "fecha": "2026-11-21"
+  },
+  {
+    "id": 3,
+    "municipio": "Apartadó",
+    "tipoFalla": "Descarga atmosférica",
+    "precipitacionMm": 52,
+    "usuariosAfectados": 890,
+    "estado": "Pendiente",
+    "fecha": "2026-11-22"
+  }
+]
